@@ -3,6 +3,8 @@
 Scoring the **New Economics Foundation's Universal Family Childcare Promise**
 with [PolicyEngine](https://policyengine.org) UK.
 
+**🔗 Live dashboard: https://uk-extended-childcare.vercel.app**
+
 The reform has two components:
 
 1. **Universal 15-hour entitlement** for every child from 9 months to 4 years,
@@ -11,6 +13,21 @@ The reform has two components:
 2. **An earnings cost cap** — the cost of childcare above the universal 15 hours
    is capped at a percentage of family earnings (5% preferred, 7.5% transitional)
    for working families; the government pays the rest.
+
+## Headline results (2025-26, static, no behavioural response)
+
+| Result | PolicyEngine UK |
+| --- | --- |
+| Universal 15h extension to under-3s (component 1) | **£4.18bn/yr** |
+| Earnings cost cap at 5% (component 2) | **£1.71bn/yr** (0.44m working families) |
+| Combined gross additional cost | **£5.89bn/yr** |
+| Children newly on the universal offer | **0.69m** (overwhelmingly under-3s) |
+| Current total government childcare support | **£13.58bn** across 6 programs |
+
+NEF's headline £3–3.4bn is the *net* cost of the whole system (which also replaces
+Tax-Free Childcare and the UC childcare element); our static score prices each
+component additively on top of the current system — the same order of magnitude,
+not like-for-like. See the dashboard's **Methodology** tab for the full mapping.
 
 ## What it produces
 
