@@ -1,0 +1,284 @@
+{
+  "year": 2025,
+  "fiscal_year_label": "2025-26",
+  "package_versions": {
+    "policyengine": "4.20.0",
+    "policyengine_uk": "2.89.2",
+    "microdf_python": "1.2.1"
+  },
+  "settings": {
+    "universal_hours_per_week": 15,
+    "weeks_per_year": 38,
+    "age_floor_baseline": 3,
+    "age_floor_reform": 0,
+    "cap_rate": 0.05,
+    "cap_rate_transitional": 0.075
+  },
+  "methods": {
+    "engine": "Baseline and reform are built with the policyengine (policyengine.py) package via policyengine.uk.managed_microsimulation(), which pins the run to the managed release dataset for reproducibility. Each scenario runs in its own process (peak memory = one microsimulation) and the arrays needed for analysis are dumped to disk; all aggregates, deciles, poverty rates and the Gini are then computed with microdf on the survey-weighted arrays.",
+    "universal_extension": "Component 1 of the UFCP \u2014 a universal 15-hour entitlement for every child from 9 months to 4 years \u2014 is modelled by lowering gov.dfe.universal_childcare_entitlement.age.min from 3 to 0. The entitlement is valued at DfE funding rates (higher for younger children), so the cost is hours x funding_rate(age). Because universal and the extended (30h) offer cannot be combined, the extension newly reaches children not already on a funded scheme \u2014 largely under-3s in non-working families. Ages are integer years, so the model covers 0-4y, marginally over-inclusive of NEF's 9-month floor.",
+    "cost_cap": "Component 2 \u2014 a cap on the cost of childcare above the universal 15 hours at a percentage of family earnings \u2014 is modelled statically: for working families (those meeting the extended/30h work and income test, which implies a young child), the government tops up reported childcare spend above cap_rate x family earnings. This uses the FRS childcare expenditure and is an approximation: it does not re-optimise the number of hours families would buy under a lower price, which NEF models separately and finds raises both usage and cost. We report the 5% cap (NEF's preferred) and a 7.5% transitional alternative.",
+    "comparison": "Our static score isolates the universal 15h extension (NEF's stated 'first step') and the cost cap as separate, additive components on top of the current system. NEF's headline \u00a33-3.4bn is the NET cost of the whole system, which also REPLACES Tax-Free Childcare and the UC childcare element and is measured against the fully rolled-out 30h offer \u2014 so the figures are the same order of magnitude but not like-for-like.",
+    "distribution": "Distributional results weight each household's change in net income by its survey weight and group by PolicyEngine's household income decile. The universal extension is valued in-kind at DfE funding rates and added to net income, so poverty (an income concept) barely moves even though the in-kind benefit is sizeable.",
+    "caveats": "Static, no behavioural/labour-supply response (NEF: net costs fall ~11% once extra working hours are counted); model take-up assumptions for funded hours; the cost cap does not model induced extra hours; in-kind valuation at DfE funding rates."
+  },
+  "reported": {
+    "nef_net_cost_low": {
+      "value": 3.0,
+      "description": "NEF net additional cost of the full UFCP system vs the fully rolled-out funded-hours offer (low end).",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "nef_net_cost_high": {
+      "value": 3.4,
+      "description": "NEF net additional cost of the full UFCP system (high end).",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "nef_current_system_cost": {
+      "value": 10.6,
+      "description": "NEF estimate of current total government childcare support (funded hours + Tax-Free Childcare + UC childcare element) once fully rolled out, \u00a3bn/yr.",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "nef_bottom60_gain_low": {
+      "value": 1081,
+      "description": "NEF: average annual gain for the bottom 60% of earners under the UFCP (low end), \u00a3.",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "nef_bottom60_gain_high": {
+      "value": 1259,
+      "description": "NEF: average annual gain for the bottom 60% of earners under the UFCP (high end), \u00a3.",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "nef_net_winners_share": {
+      "value": 0.585,
+      "description": "NEF Model 2: share of families with pre-school children better off under the UFCP.",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "nef_no_worse_off_share": {
+      "value": 0.664,
+      "description": "NEF Model 2: share of families no worse off under the UFCP.",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "poorest40_eligible_share": {
+      "value": 0.216,
+      "description": "NEF: share of families with young children in the poorest 40% who meet the working-family eligibility criteria for expanded funded hours.",
+      "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "mirror_scheme_cost_2028": {
+      "value": 8.0,
+      "description": "Current childcare scheme projected cost to the taxpayer by 2028, \u00a3bn/yr (Mirror/Times).",
+      "url": "https://www.mirror.co.uk/news/uk-news/free-childcare-could-be-extended-37401321"
+    },
+    "mirror_universal_offer_cost": {
+      "value": 15.0,
+      "description": "Cost of a full 'universal childcare offer', up to \u00a3bn/yr (Mirror/Times).",
+      "url": "https://www.mirror.co.uk/news/uk-news/free-childcare-could-be-extended-37401321"
+    },
+    "dfe_families_funded_hours": {
+      "value": 500000,
+      "description": "DfE estimate of families benefiting from funded hours (Mirror).",
+      "url": "https://www.mirror.co.uk/news/uk-news/free-childcare-could-be-extended-37401321"
+    }
+  },
+  "programs": [
+    {
+      "id": "universal_childcare_entitlement",
+      "label": "Universal 15h entitlement (England)",
+      "baseline_bn": 1.6811596794056582,
+      "reform_bn": 5.861556738266087,
+      "change_bn": 4.180397058860429
+    },
+    {
+      "id": "extended_childcare_entitlement",
+      "label": "Extended 30h working-parent entitlement",
+      "baseline_bn": 4.039871815772768,
+      "reform_bn": 4.039871815772768,
+      "change_bn": 0.0
+    },
+    {
+      "id": "targeted_childcare_entitlement",
+      "label": "Targeted 2-year-old entitlement",
+      "baseline_bn": 0.528152296002577,
+      "reform_bn": 0.528152296002577,
+      "change_bn": 0.0
+    },
+    {
+      "id": "tax_free_childcare",
+      "label": "Tax-Free Childcare (HMRC)",
+      "baseline_bn": 0.5867298936882887,
+      "reform_bn": 0.5867298936882887,
+      "change_bn": 0.0
+    },
+    {
+      "id": "uc_childcare_element",
+      "label": "Universal Credit childcare element",
+      "baseline_bn": 6.745153766490204,
+      "reform_bn": 6.745153766490204,
+      "change_bn": 0.0
+    },
+    {
+      "id": "childcare_grant",
+      "label": "Childcare Grant (students, DfE)",
+      "baseline_bn": 0.0,
+      "reform_bn": 0.0,
+      "change_bn": 0.0
+    }
+  ],
+  "baseline": {
+    "total_support_bn": 13.581067451359496,
+    "children_under5_m": 3.7614920862391217,
+    "children_under3_m": 2.332330538241379,
+    "on_universal_offer_m": 0.48936534345149996,
+    "poverty_all_pct": 15.348129163543986,
+    "child_poverty_pct": 20.91154003689723,
+    "gini": 0.3839073379501398
+  },
+  "reform": {
+    "changes": [
+      {
+        "policy": "Universal free entitlement \u2014 youngest eligible age",
+        "parameter": "gov.dfe.universal_childcare_entitlement.age.min",
+        "baseline": "3 years",
+        "reform": "9 months (modelled as age 0)",
+        "effect": "Extends the universal 15h/week offer to every child from 9 months, regardless of whether parents work."
+      },
+      {
+        "policy": "Universal free entitlement \u2014 hours",
+        "parameter": "gov.dfe.universal_childcare_entitlement.hours",
+        "baseline": "15 hours/week (570/year)",
+        "reform": "15 hours/week (unchanged)",
+        "effect": "The core universal hours are kept the same; only the eligible age range widens."
+      },
+      {
+        "policy": "Cost of hours above the universal 15 (working families)",
+        "parameter": "new \u2014 earnings cost cap",
+        "baseline": "No cap (market rates, net of Tax-Free Childcare / UC childcare element)",
+        "reform": "Capped at 5% of family earnings (7.5% transitional)",
+        "effect": "Government pays a working family's childcare spend above the cap on hours beyond the universal 15."
+      },
+      {
+        "policy": "Working-family / income eligibility for extra hours",
+        "parameter": "extended_childcare_entitlement (work + income test)",
+        "baseline": "Both parents earning \u226516h at NLW, each under \u00a3100k",
+        "reform": "Unchanged (retained as the cap's 'working family' test)",
+        "effect": "Same work test gates the cost cap; the universal 15h has no work test."
+      }
+    ],
+    "universal_extension": {
+      "net_cost_bn": 4.180397058860427,
+      "newly_covered_m": 0.6939757730472088,
+      "by_age": [
+        {
+          "age": 0,
+          "count_k": 303.7137070983648
+        },
+        {
+          "age": 1,
+          "count_k": 175.55036060154438
+        },
+        {
+          "age": 2,
+          "count_k": 214.71170534729958
+        }
+      ],
+      "on_universal_offer_m": 1.1833411164987087,
+      "reform_total_bn": 17.761464510219923
+    },
+    "cost_cap": {
+      "cap_rate": 0.05,
+      "cost_bn": 1.70939817530696,
+      "families_helped_m": 0.43937504184424875,
+      "transitional_cap_rate": 0.075,
+      "transitional_cost_bn": 0.9277395131384558
+    },
+    "total": {
+      "gross_cost_bn": 5.889795234167387,
+      "gross_cost_transitional_bn": 5.108136571998883
+    },
+    "distribution": {
+      "by_decile": [
+        {
+          "decile": 1,
+          "total_gain_bn": 0.6309486051365065,
+          "avg_gain": 223.32064101833075,
+          "pct_of_income": 1.2033924278938077,
+          "winner_share": 3.629382133281092
+        },
+        {
+          "decile": 2,
+          "total_gain_bn": 0.5316460178953908,
+          "avg_gain": 171.4155898055496,
+          "pct_of_income": 0.6137459049279268,
+          "winner_share": 2.688479169221467
+        },
+        {
+          "decile": 3,
+          "total_gain_bn": 0.5867251167040155,
+          "avg_gain": 202.63585842827018,
+          "pct_of_income": 0.5621620227718783,
+          "winner_share": 3.277028478351859
+        },
+        {
+          "decile": 4,
+          "total_gain_bn": 0.22411107027997515,
+          "avg_gain": 85.64959527919189,
+          "pct_of_income": 0.19398882772655404,
+          "winner_share": 1.2034971030168897
+        },
+        {
+          "decile": 5,
+          "total_gain_bn": 0.48470937508945383,
+          "avg_gain": 164.60581306083122,
+          "pct_of_income": 0.35889015598353213,
+          "winner_share": 2.745657475455656
+        },
+        {
+          "decile": 6,
+          "total_gain_bn": 0.08209431878169575,
+          "avg_gain": 27.952794202368917,
+          "pct_of_income": 0.05334228761985061,
+          "winner_share": 0.4165500040356595
+        },
+        {
+          "decile": 7,
+          "total_gain_bn": 0.3409521836670227,
+          "avg_gain": 121.47921932565205,
+          "pct_of_income": 0.19810343835972438,
+          "winner_share": 1.8929188774825756
+        },
+        {
+          "decile": 8,
+          "total_gain_bn": 0.15954010180527162,
+          "avg_gain": 58.673993230102624,
+          "pct_of_income": 0.07985842907236851,
+          "winner_share": 0.9796600284609235
+        },
+        {
+          "decile": 9,
+          "total_gain_bn": 0.2089321685537736,
+          "avg_gain": 67.65414042051009,
+          "pct_of_income": 0.0823682259865937,
+          "winner_share": 1.0792596864177402
+        },
+        {
+          "decile": 10,
+          "total_gain_bn": 0.9307382616439682,
+          "avg_gain": 291.89107398342804,
+          "pct_of_income": 0.19989467229226843,
+          "winner_share": 4.776309564509842
+        }
+      ],
+      "overall_winner_share": 1.5137923301188607,
+      "bottom60_mean_gain": 146.6611263806866
+    },
+    "poverty": {
+      "all_baseline": 15.348129163543986,
+      "all_reform": 15.348129163543986,
+      "child_baseline": 20.91154003689723,
+      "child_reform": 20.91154003689723
+    },
+    "inequality": {
+      "gini_baseline": 0.3839073379501398,
+      "gini_reform": 0.38361229694839777
+    }
+  }
+}
