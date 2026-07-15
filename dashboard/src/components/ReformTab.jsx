@@ -172,6 +172,17 @@ export default function ReformTab({ data }) {
             note="Under-3s not already on a funded scheme — largely non-working families."
           />
         </div>
+        <p className="mt-4 rounded-md bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600">
+          <span className="font-semibold text-slate-800">Where the money goes:</span> the universal
+          15h extension to non-working families ({formatBn(ext.net_cost_bn)}) is the bulk of the
+          cost — the working-family earnings cap adds {formatBn(cap.cost_bn)} on top.
+        </p>
+        <p className="mt-3 rounded-md border-l-4 px-4 py-3 text-sm leading-6 text-slate-600" style={{ borderColor: ACCENT, backgroundColor: "#F0FAF7" }}>
+          <span className="font-semibold text-slate-800">Take-up caveat:</span> this is a static
+          score with assumed full take-up of the funded hours and no behavioural or labour-supply
+          response. The in-kind entitlement is valued at DfE funding rates, so actual fiscal cost
+          depends on how many eligible non-working families take up the offer.
+        </p>
       </section>
 
       {/* newly covered by age */}
