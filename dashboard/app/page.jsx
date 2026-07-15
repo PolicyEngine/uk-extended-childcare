@@ -74,7 +74,7 @@ function Dashboard() {
     <div className="app-shell min-h-screen">
       <header className="title-row">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-8">
-          <h1>The Universal Family Childcare Promise</h1>
+          <h1>Universal Family Childcare Analysis</h1>
         </div>
       </header>
 

@@ -21,6 +21,8 @@ from .scenarios import run_baseline, run_costcap, run_reform
 from .sources import (
     CAP_RATE,
     CAP_RATE_TRANSITIONAL,
+    TAKEUP_DEFAULT_KEY,
+    TAKEUP_SCENARIOS,
     UNIVERSAL_AGE_FLOOR_BASELINE,
     UNIVERSAL_AGE_FLOOR_REFORM,
 )
@@ -80,6 +82,12 @@ def build(cache_dir: Path, year: int = 2025, force: bool = False) -> dict:
     cap5_cost = float(cap5["total_cost"]) / 1e9
     cap75_cost = float(cap75["total_cost"]) / 1e9
 
+    takeup = impacts.takeup_sensitivity(
+        universal_net_cost, cov["total"] / 1e6, TAKEUP_SCENARIOS
+    )
+    takeup_by_key = {r["key"]: r for r in takeup}
+    ext_benchmark_cost = takeup_by_key[TAKEUP_DEFAULT_KEY]["cost_bn"]
+
     result = {
         "year": year,
         "fiscal_year_label": f"{year}-{str(year + 1)[-2:]}",
@@ -112,6 +120,12 @@ def build(cache_dir: Path, year: int = 2025, force: bool = False) -> dict:
                 "by_age": [{"age": r["age"], "count_k": r["count"] / 1e3} for r in cov["by_age"]],
                 "on_universal_offer_m": cov["reform_on_offer"] / 1e6,
                 "reform_total_bn": reform_total,
+                "takeup": {
+                    "full_cost_bn": universal_net_cost,
+                    "default_key": TAKEUP_DEFAULT_KEY,
+                    "benchmark_cost_bn": ext_benchmark_cost,
+                    "scenarios": takeup,
+                },
             },
             "cost_cap": {
                 "cap_rate": CAP_RATE,
@@ -123,6 +137,10 @@ def build(cache_dir: Path, year: int = 2025, force: bool = False) -> dict:
             "total": {
                 "gross_cost_bn": universal_net_cost + cap5_cost,
                 "gross_cost_transitional_bn": universal_net_cost + cap75_cost,
+                # Combined cost when the universal extension is priced at benchmark
+                # take-up (the cost cap is a working-family offer, kept at full
+                # take-up as an upper bound on that component).
+                "gross_cost_benchmark_takeup_bn": ext_benchmark_cost + cap5_cost,
             },
             "distribution": {
                 "by_decile": impacts.decile_impact(baseline, reform),

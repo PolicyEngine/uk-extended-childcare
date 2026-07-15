@@ -16,10 +16,12 @@ import { formatBn, formatCount, formatCurrency, formatPct } from "../lib/formatt
 import {
   getCostCap,
   getDistribution,
+  getMethods,
   getPrograms,
   getReform,
   getReported,
   getSettings,
+  getTakeup,
   getUniversalExtension,
 } from "../lib/dataHelpers";
 import ChartLogo from "./ChartLogo";
@@ -51,8 +53,24 @@ export default function ReformTab({ data }) {
   const programs = getPrograms(data);
   const settings = getSettings(data);
   const reported = getReported(data);
+  const takeup = getTakeup(data);
+  const methods = getMethods(data);
 
   const changed = programs.filter((p) => Math.abs(p.change_bn) > 1e-6);
+
+  const tuByKey = Object.fromEntries(takeup.scenarios.map((s) => [s.key, s]));
+  const tuFull = tuByKey.full;
+  const tuBench = tuByKey[takeup.default_key];
+  const tuLow = tuByKey.low;
+  // Combined cost when the universal extension is priced at benchmark take-up.
+  const combinedBenchmark = reform.total.gross_cost_benchmark_takeup_bn;
+
+  const takeupData = takeup.scenarios.map((s) => ({
+    label: s.label,
+    key: s.key,
+    cost: s.cost_bn,
+    rate: s.rate,
+  }));
 
   const decileData = dist.by_decile.map((d) => ({
     decile: d.decile,
@@ -70,7 +88,7 @@ export default function ReformTab({ data }) {
     {
       metric: "Net cost — universal 15h to under-3s (NEF 'first step')",
       reported: `~£${reported.nef_net_cost_low.value}–${reported.nef_net_cost_high.value}bn (full system, net)`,
-      ours: formatBn(ext.net_cost_bn),
+      ours: `${formatBn(tuBench.cost_bn)} at benchmark take-up (up to ${formatBn(tuFull.cost_bn)})`,
     },
     {
       metric: "Earnings cost cap (5%) for working families",
@@ -78,9 +96,9 @@ export default function ReformTab({ data }) {
       ours: formatBn(cap.cost_bn),
     },
     {
-      metric: "Combined gross additional cost",
+      metric: "Combined additional cost",
       reported: `~£${reported.nef_net_cost_low.value}–${reported.nef_net_cost_high.value}bn net (replaces other streams)`,
-      ours: formatBn(reform.total.gross_cost_bn),
+      ours: `${formatBn(combinedBenchmark)} at benchmark take-up (up to ${formatBn(reform.total.gross_cost_bn)})`,
     },
     {
       metric: "Current total government childcare support",
@@ -103,6 +121,38 @@ export default function ReformTab({ data }) {
           description="The reform stacks two components on today's system: a universal 15-hour entitlement for every child from 9 months to 4 years, and a cap on the cost of extra hours at a share of family earnings for working families. Figures are static, survey-weighted PolicyEngine UK results; no behavioural response."
         />
       </div>
+
+      {/* what this analysis adds over NEF's single headline */}
+      <section className="section-card" style={{ borderLeft: `4px solid ${ACCENT}` }}>
+        <SectionHeading title="What this analysis adds" />
+        <p className="text-sm leading-6 text-slate-600">{methods.value_add}</p>
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-md bg-slate-50 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Decompose</p>
+            <p className="mt-1 text-sm leading-5 text-slate-700">
+              The universal under-3 extension is <span className="font-semibold">{formatBn(ext.net_cost_bn)}</span> of the
+              cost; the earnings cap adds only <span className="font-semibold">{formatBn(cap.cost_bn)}</span>. The extension
+              is the bulk — not the cap.
+            </p>
+          </div>
+          <div className="rounded-md bg-slate-50 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Who is covered</p>
+            <p className="mt-1 text-sm leading-5 text-slate-700">
+              The <span className="font-semibold">{ext.newly_covered_m.toFixed(2)}m</span> newly-covered children are almost
+              all under-3s in <span className="font-semibold">non-working</span> families — working families' under-3s
+              already use the 30h offer.
+            </p>
+          </div>
+          <div className="rounded-md bg-slate-50 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Stress-test take-up</p>
+            <p className="mt-1 text-sm leading-5 text-slate-700">
+              At realistic take-up the extension costs{" "}
+              <span className="font-semibold">{formatBn(tuLow.cost_bn)}–{formatBn(tuBench.cost_bn)}</span>, not the{" "}
+              {formatBn(tuFull.cost_bn)} full-take-up ceiling.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* what the reform changes */}
       <section className="section-card">
@@ -150,8 +200,10 @@ export default function ReformTab({ data }) {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             label="1 · Universal 15h extension (to under-3s)"
-            value={formatBn(ext.net_cost_bn)}
-            note="Net change across all six childcare programs, per year."
+            value={formatBn(tuBench.cost_bn)}
+            note={`At benchmark take-up (${formatPct(tuBench.rate * 100, 0)}). Full-take-up ceiling: ${formatBn(
+              tuFull.cost_bn,
+            )}. Low case: ${formatBn(tuLow.cost_bn)}.`}
           />
           <MetricCard
             label={`2 · Earnings cost cap (${formatPct(settings.cap_rate * 100, 0)})`}
@@ -162,26 +214,89 @@ export default function ReformTab({ data }) {
             )} transitional: ${formatBn(cap.transitional_cost_bn)}.`}
           />
           <MetricCard
-            label="Combined gross additional cost"
-            value={formatBn(reform.total.gross_cost_bn)}
-            note={`NEF full-system net estimate: ~£${reported.nef_net_cost_low.value}–${reported.nef_net_cost_high.value}bn (replaces Tax-Free Childcare + UC element).`}
+            label="Combined additional cost"
+            value={formatBn(combinedBenchmark)}
+            note={`Benchmark take-up. Full-take-up ceiling: ${formatBn(
+              reform.total.gross_cost_bn,
+            )}. NEF full-system net estimate: ~£${reported.nef_net_cost_low.value}–${reported.nef_net_cost_high.value}bn (replaces Tax-Free Childcare + UC element).`}
           />
           <MetricCard
             label="Children newly on the universal offer"
-            value={`${ext.newly_covered_m.toFixed(2)}m`}
-            note="Under-3s not already on a funded scheme — largely non-working families."
+            value={`${tuBench.newly_covered_m.toFixed(2)}m`}
+            note={`At benchmark take-up; up to ${ext.newly_covered_m.toFixed(
+              2,
+            )}m at full take-up. Under-3s not already on a funded scheme — largely non-working families.`}
           />
         </div>
         <p className="mt-4 rounded-md bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600">
           <span className="font-semibold text-slate-800">Where the money goes:</span> the universal
-          15h extension to non-working families ({formatBn(ext.net_cost_bn)}) is the bulk of the
-          cost — the working-family earnings cap adds {formatBn(cap.cost_bn)} on top.
+          15h extension to non-working families is the bulk of the cost ({formatBn(ext.net_cost_bn)}{" "}
+          at full take-up, {formatBn(tuBench.cost_bn)} at benchmark take-up) — the working-family
+          earnings cap adds only {formatBn(cap.cost_bn)} on top. The cap is <em>not</em> the driver.
         </p>
-        <p className="mt-3 rounded-md border-l-4 px-4 py-3 text-sm leading-6 text-slate-600" style={{ borderColor: ACCENT, backgroundColor: "#F0FAF7" }}>
-          <span className="font-semibold text-slate-800">Take-up caveat:</span> this is a static
-          score with assumed full take-up of the funded hours and no behavioural or labour-supply
-          response. The in-kind entitlement is valued at DfE funding rates, so actual fiscal cost
-          depends on how many eligible non-working families take up the offer.
+      </section>
+
+      {/* take-up sensitivity — the assumption that most exposes the cost */}
+      <section className="section-card">
+        <SectionHeading
+          title="Would non-working families take it up? Cost by take-up rate"
+          description={methods.take_up}
+        />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={takeupData} margin={{ top: 20, right: 20, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.gray[200]} vertical={false} />
+              <XAxis dataKey="label" tick={{ ...AXIS, fontSize: 11 }} interval={0} />
+              <YAxis
+                tick={AXIS}
+                label={{ value: "£bn / year", angle: -90, position: "insideLeft", fontSize: 12, fill: colors.gray[500] }}
+              />
+              <Tooltip formatter={(v) => formatBn(v)} labelFormatter={(l) => l} />
+              <Bar dataKey="cost" radius={[6, 6, 0, 0]}>
+                {takeupData.map((d) => (
+                  <Cell key={d.key} fill={d.key === takeup.default_key ? ACCENT : PRIMARY} />
+                ))}
+                <LabelList dataKey="cost" position="top" formatter={(v) => formatBn(v)} style={{ fontSize: 11, fill: colors.gray[600] }} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="overflow-x-auto">
+            <table className="data-table w-full">
+              <thead>
+                <tr>
+                  <th>Take-up scenario</th>
+                  <th className="text-right">Rate</th>
+                  <th className="text-right">Component-1 cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {takeup.scenarios.map((s) => (
+                  <tr key={s.key}>
+                    <td className="align-top">
+                      <span className="font-semibold">{s.label}</span>
+                      {s.key === takeup.default_key && (
+                        <span className="ml-2 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: ACCENT }}>
+                          headline
+                        </span>
+                      )}
+                      <div className="mt-1 text-xs leading-5 text-slate-500">{s.note}</div>
+                    </td>
+                    <td className="align-top text-right">{formatPct(s.rate * 100, 0)}</td>
+                    <td className="align-top text-right font-semibold">{formatBn(s.cost_bn)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p className="mt-4 rounded-md border-l-4 px-4 py-3 text-sm leading-6 text-slate-600" style={{ borderColor: ACCENT, backgroundColor: "#F0FAF7" }}>
+          <span className="font-semibold text-slate-800">The take-up question is decisive.</span> Because
+          the extension reaches children with a parent already at home, take-up is the single biggest
+          swing on the cost. The {formatBn(tuFull.cost_bn)} "£4bn for non-working families" figure is the{" "}
+          <em>ceiling</em> — it assumes every eligible family enrols. Benchmarked against the disadvantaged
+          2-year-old offer (~{formatPct(reported.takeup_2yo_offer.value * 100, 0)} take-up, the closest real
+          comparator), the extension costs {formatBn(tuBench.cost_bn)}; on a low case for the youngest
+          children, {formatBn(tuLow.cost_bn)}.
         </p>
       </section>
 

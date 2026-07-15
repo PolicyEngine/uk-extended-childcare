@@ -20,7 +20,9 @@
     "cost_cap": "Component 2 \u2014 a cap on the cost of childcare above the universal 15 hours at a percentage of family earnings \u2014 is modelled statically: for working families (those meeting the extended/30h work and income test, which implies a young child), the government tops up reported childcare spend above cap_rate x family earnings. This uses the FRS childcare expenditure and is an approximation: it does not re-optimise the number of hours families would buy under a lower price, which NEF models separately and finds raises both usage and cost. We report the 5% cap (NEF's preferred) and a 7.5% transitional alternative.",
     "comparison": "Our static score isolates the universal 15h extension (NEF's stated 'first step') and the cost cap as separate, additive components on top of the current system. NEF's headline \u00a33-3.4bn is the NET cost of the whole system, which also REPLACES Tax-Free Childcare and the UC childcare element and is measured against the fully rolled-out 30h offer \u2014 so the figures are the same order of magnitude but not like-for-like.",
     "distribution": "Distributional results weight each household's change in net income by its survey weight and group by PolicyEngine's household income decile. The universal extension is valued in-kind at DfE funding rates and added to net income, so poverty (an income concept) barely moves even though the in-kind benefit is sizeable.",
-    "caveats": "Static, no behavioural/labour-supply response (NEF: net costs fall ~11% once extra working hours are counted); model take-up assumptions for funded hours; the cost cap does not model induced extra hours; in-kind valuation at DfE funding rates."
+    "take_up": "The universal extension is priced at FULL take-up in the raw microsimulation, but the children it newly reaches are overwhelmingly under-3s in NON-WORKING families \u2014 a group with a home parent and therefore lower demand for formal childcare. We do not assume every such family enrols. Because the entire component-1 cost sits in one program (the universal entitlement), cost is exactly linear in take-up, so we present a sensitivity band: full take-up (the fiscal ceiling), a benchmark equal to the observed take-up of the disadvantaged 2-year-old offer (~74%, the closest existing funded offer for often-non-working families), and a low case (~50%) for the youngest, newly-eligible children. The take-up-adjusted benchmark, not the ceiling, is the headline cost.",
+    "value_add": "NEF publishes a single net headline for the whole package. This analysis adds three things a headline cannot: (1) it DECOMPOSES the promise into its two levers and prices each separately on the actual UK microdata, showing the universal under-3 extension \u2014 not the earnings cap \u2014 is the bulk of the cost; (2) it shows exactly WHO is newly covered (by age and work status), making the 'childcare for non-working families' question explicit rather than buried; and (3) it stress-tests the assumption that most exposes the cost \u2014 take-up among non-working families \u2014 turning a point estimate into a defensible range.",
+    "caveats": "Static, no behavioural/labour-supply response (NEF: net costs fall ~11% once extra working hours are counted); the universal extension is shown across a take-up band (see take-up), with distributional and poverty figures reported at full take-up as an upper bound on reach; the cost cap does not model induced extra hours; in-kind valuation at DfE funding rates."
   },
   "reported": {
     "nef_net_cost_low": {
@@ -62,6 +64,16 @@
       "value": 0.216,
       "description": "NEF: share of families with young children in the poorest 40% who meet the working-family eligibility criteria for expanded funded hours.",
       "url": "https://neweconomics.org/2025/07/the-universal-family-childcare-promise"
+    },
+    "takeup_2yo_offer": {
+      "value": 0.74,
+      "description": "Peak take-up of the funded early-education entitlement for disadvantaged 2-year-olds (share of eligible children accessing a place), England \u2014 the closest existing offer to a funded entitlement for families who are frequently not working.",
+      "url": "https://ifs.org.uk/articles/why-take-two-year-old-offer-has-really-fallen"
+    },
+    "takeup_universal_34": {
+      "value": 0.93,
+      "description": "Take-up of the universal 15h entitlement for 3- and 4-year-olds, England (Jan 2025) \u2014 an upper benchmark where nearly all families use the offer.",
+      "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025"
     },
     "mirror_scheme_cost_2028": {
       "value": 8.0,
@@ -181,7 +193,38 @@
         }
       ],
       "on_universal_offer_m": 1.1833411164987087,
-      "reform_total_bn": 17.761464510219923
+      "reform_total_bn": 17.761464510219923,
+      "takeup": {
+        "full_cost_bn": 4.180397058860427,
+        "default_key": "benchmark",
+        "benchmark_cost_bn": 3.0934938235567158,
+        "scenarios": [
+          {
+            "key": "full",
+            "label": "Full take-up",
+            "note": "Fiscal ceiling: every eligible family uses the funded hours. The original headline assumption.",
+            "rate": 1.0,
+            "cost_bn": 4.180397058860427,
+            "newly_covered_m": 0.6939757730472088
+          },
+          {
+            "key": "benchmark",
+            "label": "2-year-old offer benchmark",
+            "note": "Take-up equal to the disadvantaged 2-year-old entitlement (~74% at its peak) \u2014 the closest existing funded offer aimed at families who are frequently not working.",
+            "rate": 0.74,
+            "cost_bn": 3.0934938235567158,
+            "newly_covered_m": 0.5135420720549345
+          },
+          {
+            "key": "low",
+            "label": "Low case (youngest children)",
+            "note": "Illustrative: non-working parents of under-2s have the least need for formal care, so take-up runs below the 2-year-old benchmark.",
+            "rate": 0.5,
+            "cost_bn": 2.0901985294302134,
+            "newly_covered_m": 0.3469878865236044
+          }
+        ]
+      }
     },
     "cost_cap": {
       "cap_rate": 0.05,
@@ -192,7 +235,8 @@
     },
     "total": {
       "gross_cost_bn": 5.889795234167387,
-      "gross_cost_transitional_bn": 5.108136571998883
+      "gross_cost_transitional_bn": 5.108136571998883,
+      "gross_cost_benchmark_takeup_bn": 4.802891998863676
     },
     "distribution": {
       "by_decile": [

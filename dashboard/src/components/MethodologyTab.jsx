@@ -4,8 +4,10 @@ import { getReported, getSettings } from "../lib/dataHelpers";
 import SectionHeading from "./SectionHeading";
 
 const METHOD_ORDER = [
+  ["value_add", "What this analysis adds"],
   ["engine", "Simulation engine"],
   ["universal_extension", "Component 1 — universal 15-hour extension"],
+  ["take_up", "Take-up of the universal extension"],
   ["cost_cap", "Component 2 — earnings cost cap"],
   ["distribution", "Distributional impact"],
   ["comparison", "Comparison with NEF / Mirror"],

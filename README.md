@@ -18,16 +18,37 @@ The reform has two components:
 
 | Result | PolicyEngine UK |
 | --- | --- |
-| Universal 15h extension to under-3s (component 1) | **£4.18bn/yr** |
+| Universal 15h extension to under-3s (component 1) | **£3.09bn/yr** at benchmark take-up (**£4.18bn** ceiling at full take-up) |
 | Earnings cost cap at 5% (component 2) | **£1.71bn/yr** (0.44m working families) |
-| Combined gross additional cost | **£5.89bn/yr** |
-| Children newly on the universal offer | **0.69m** (overwhelmingly under-3s) |
+| Combined additional cost | **£4.80bn/yr** at benchmark take-up (**£5.89bn** at full take-up) |
+| Children newly on the universal offer | **0.51m** at benchmark take-up (0.69m at full; overwhelmingly under-3s) |
 | Current total government childcare support | **£13.58bn** across 6 programs |
+
+### What this analysis adds (and how it answers the obvious objections)
+
+NEF publishes a single net headline for the whole package. Pricing it in
+PolicyEngine adds three things a headline can't:
+
+1. **Decomposition — it's the universal extension, not the cap, that costs.** The
+   universal under-3 extension is the bulk (£3–4bn depending on take-up); the
+   working-family earnings cap adds only **£1.71bn** on top. The cap is *not* the
+   driver.
+2. **Who is covered.** The newly-covered children are almost entirely under-3s in
+   **non-working** families — working families' under-3s already use the 30h
+   offer. This makes the "childcare for people who aren't working" question
+   explicit rather than buried in a net figure.
+3. **A take-up sensitivity band, not a point.** The raw microsim assumes *full*
+   take-up, but these children have a parent already at home, so real take-up is
+   well below 100%. Because the whole component-1 cost sits in one program, cost
+   is exactly linear in take-up. We benchmark against the closest existing offer —
+   the disadvantaged 2-year-old entitlement, ~74% take-up ([IFS](https://ifs.org.uk/articles/why-take-two-year-old-offer-has-really-fallen)) —
+   and show a low case (~50%). The "£4bn for non-working families" figure is the
+   **ceiling**; the take-up-adjusted headline is **£3.09bn** (low case £2.09bn).
 
 NEF's headline £3–3.4bn is the *net* cost of the whole system (which also replaces
 Tax-Free Childcare and the UC childcare element); our static score prices each
-component additively on top of the current system — the same order of magnitude,
-not like-for-like. See the dashboard's **Methodology** tab for the full mapping.
+component additively on top of the current system — same order of magnitude, not
+like-for-like. See the dashboard's **Methodology** tab for the full mapping.
 
 ## What it produces
 

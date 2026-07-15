@@ -44,3 +44,19 @@ def test_newly_covered_counts_by_age():
     cov = impacts.newly_covered(base, ref)
     assert cov["total"] == 10
     assert cov["by_age"] == [{"age": 1, "count": 10.0}]
+
+
+def test_takeup_sensitivity_scales_cost_and_reach_linearly():
+    scenarios = [
+        {"key": "full", "rate": 1.0, "label": "Full", "note": "n"},
+        {"key": "benchmark", "rate": 0.74, "label": "Benchmark", "note": "n"},
+        {"key": "low", "rate": 0.5, "label": "Low", "note": "n"},
+    ]
+    rows = impacts.takeup_sensitivity(4.0, 0.7, scenarios)
+    by_key = {r["key"]: r for r in rows}
+    assert by_key["full"]["cost_bn"] == 4.0
+    assert by_key["full"]["newly_covered_m"] == 0.7
+    assert by_key["benchmark"]["cost_bn"] == 4.0 * 0.74
+    assert by_key["low"]["newly_covered_m"] == 0.35
+    # linearity: cost / reach is preserved across scenarios
+    assert abs(by_key["low"]["cost_bn"] / 4.0 - 0.5) < 1e-12

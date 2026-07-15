@@ -80,6 +80,31 @@ def newly_covered(baseline: dict, reform: dict) -> dict:
     }
 
 
+def takeup_sensitivity(
+    full_cost_bn: float, full_newly_covered_m: float, scenarios: list[dict]
+) -> list[dict]:
+    """Scale component-1 cost and reach by each scenario's take-up rate.
+
+    The entire universal-extension cost sits in a single program (the universal
+    entitlement), so both cost and the count of newly-covered children are exactly
+    linear in take-up. Each ``scenarios`` entry is ``{key, rate, label, note}``.
+    """
+    rows = []
+    for s in scenarios:
+        rate = float(s["rate"])
+        rows.append(
+            {
+                "key": s["key"],
+                "label": s["label"],
+                "note": s.get("note", ""),
+                "rate": rate,
+                "cost_bn": full_cost_bn * rate,
+                "newly_covered_m": full_newly_covered_m * rate,
+            }
+        )
+    return rows
+
+
 def bottom60_mean_gain(baseline: dict, reform: dict) -> float:
     gain = reform["net"] - baseline["net"]
     df = MicroDataFrame(

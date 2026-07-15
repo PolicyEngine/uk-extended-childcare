@@ -21,6 +21,14 @@ export function getCostCap(data) {
   return data.reform.cost_cap;
 }
 
+export function getTakeup(data) {
+  return data.reform.universal_extension.takeup;
+}
+
+export function getMethods(data) {
+  return data.methods;
+}
+
 export function getDistribution(data) {
   return data.reform.distribution;
 }
