@@ -97,42 +97,78 @@
       "label": "Universal 15h entitlement (England)",
       "baseline_bn": 1.6811596794056582,
       "reform_bn": 5.861556738266087,
-      "change_bn": 4.180397058860429
+      "change_bn": 4.180397058860429,
+      "official": {
+        "stat": "1.16m children registered (93.1% of 3\u20134-year-olds)",
+        "period": "Jan 2025",
+        "source": "DfE, Funded early education and childcare",
+        "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025"
+      }
     },
     {
       "id": "extended_childcare_entitlement",
       "label": "Extended 30h working-parent entitlement",
       "baseline_bn": 4.039871815772768,
       "reform_bn": 4.039871815772768,
-      "change_bn": 0.0
+      "change_bn": 0.0,
+      "official": {
+        "stat": "379k children on the extended 30h hours (~91% of eligible)",
+        "period": "Jan 2025",
+        "source": "DfE, Funded early education and childcare",
+        "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025"
+      }
     },
     {
       "id": "targeted_childcare_entitlement",
       "label": "Targeted 2-year-old entitlement",
       "baseline_bn": 0.528152296002577,
       "reform_bn": 0.528152296002577,
-      "change_bn": 0.0
+      "change_bn": 0.0,
+      "official": {
+        "stat": "95k two-year-olds registered (65.2% of eligible)",
+        "period": "Jan 2025",
+        "source": "DfE, Funded early education and childcare",
+        "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025"
+      }
     },
     {
       "id": "tax_free_childcare",
       "label": "Tax-Free Childcare (HMRC)",
       "baseline_bn": 0.5867298936882887,
       "reform_bn": 0.5867298936882887,
-      "change_bn": 0.0
+      "change_bn": 0.0,
+      "official": {
+        "stat": "~826k families used TFC; \u00a3632m government top-up",
+        "period": "2024-25",
+        "source": "HMRC, Tax-Free Childcare statistics",
+        "url": "https://www.gov.uk/government/statistics/tax-free-childcare-statistics-march-2025"
+      }
     },
     {
       "id": "uc_childcare_element",
       "label": "Universal Credit childcare element",
       "baseline_bn": 6.745153766490204,
       "reform_bn": 6.745153766490204,
-      "change_bn": 0.0
+      "change_bn": 0.0,
+      "official": {
+        "stat": "190k households, average award \u00a3420/month",
+        "period": "May 2025",
+        "source": "DWP, Universal Credit childcare element statistics",
+        "url": "https://www.gov.uk/government/statistics/universal-credit-statistics-29-april-2013-to-10-july-2025/universal-credit-childcare-element-statistics-march-2021-to-may-2025"
+      }
     },
     {
       "id": "childcare_grant",
       "label": "Childcare Grant (students, DfE)",
       "baseline_bn": 0.0,
       "reform_bn": 0.0,
-      "change_bn": 0.0
+      "change_bn": 0.0,
+      "official": {
+        "stat": "41,100 students awarded; \u00a3152.6m paid",
+        "period": "2023/24",
+        "source": "DfE / SLC, Student support for higher education",
+        "url": "https://www.gov.uk/government/statistics/student-support-for-higher-education-in-england-2024/student-support-for-higher-education-in-england-2024"
+      }
     }
   ],
   "baseline": {

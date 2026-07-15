@@ -54,7 +54,16 @@ def _programs(baseline: dict, reform: dict) -> list[dict]:
     for var, label in PROGRAM_LABELS.items():
         b = float(baseline[f"prog_{var}"]) / 1e9
         r = float(reform[f"prog_{var}"]) / 1e9
-        rows.append({"id": var, "label": label, "baseline_bn": b, "reform_bn": r, "change_bn": r - b})
+        rows.append(
+            {
+                "id": var,
+                "label": label,
+                "baseline_bn": b,
+                "reform_bn": r,
+                "change_bn": r - b,
+                "official": sources.OFFICIAL_PROGRAM_STATS.get(var),
+            }
+        )
     return rows
 
 

@@ -4,15 +4,37 @@ import { getReported, getSettings } from "../lib/dataHelpers";
 import SectionHeading from "./SectionHeading";
 
 const METHOD_ORDER = [
-  ["value_add", "What this analysis adds"],
-  ["engine", "Simulation engine"],
   ["universal_extension", "Component 1 — universal 15-hour extension"],
   ["take_up", "Take-up of the universal extension"],
   ["cost_cap", "Component 2 — earnings cost cap"],
-  ["distribution", "Distributional impact"],
-  ["comparison", "Comparison with NEF / Mirror"],
   ["caveats", "Caveats"],
 ];
+
+// Sources to hyperlink inline under each method section (keys into `reported`).
+const SECTION_SOURCES = {
+  universal_extension: ["takeup_universal_34", "nef_current_system_cost"],
+  take_up: ["takeup_2yo_offer", "takeup_universal_34"],
+  cost_cap: ["nef_net_cost_low", "poorest40_eligible_share"],
+  caveats: ["nef_net_cost_low", "mirror_scheme_cost_2028"],
+};
+
+function SourceLinks({ keys, reported }) {
+  const links = (keys || []).map((k) => reported[k]).filter(Boolean);
+  if (!links.length) return null;
+  return (
+    <p className="mt-3 text-xs text-slate-500">
+      <span className="font-semibold text-slate-600">Sources: </span>
+      {links.map((s, i) => (
+        <span key={s.url}>
+          {i > 0 && " · "}
+          <a href={s.url} target="_blank" rel="noreferrer" className="underline">
+            {s.description.split(/[—.(]/)[0].trim().slice(0, 70)}
+          </a>
+        </span>
+      ))}
+    </p>
+  );
+}
 
 export default function MethodologyTab({ data }) {
   const methods = data.methods;
@@ -25,7 +47,7 @@ export default function MethodologyTab({ data }) {
         <SectionHeading
           size="lg"
           title="Methodology"
-          description="How every result on the other tabs is computed, and where each non-model number comes from. Statutory parameters (funded hours, funding rates, income limits, age floors) are read from the PolicyEngine parameter tree at run time; every other number is listed with a source below."
+          description="How every result on the other tabs is computed, and where each non-model number comes from. Statutory parameters (funded hours, funding rates, income limits, age floors) are read from the PolicyEngine parameter tree at run time; every other number is linked to its source inline below."
         />
       </div>
 
@@ -51,50 +73,9 @@ export default function MethodologyTab({ data }) {
         <section className="section-card" key={key}>
           <SectionHeading title={title} />
           <p className="text-sm leading-6 text-slate-600">{methods[key]}</p>
+          <SourceLinks keys={SECTION_SOURCES[key]} reported={reported} />
         </section>
       ))}
-
-      <section className="section-card">
-        <SectionHeading
-          title="Reported figures and sources"
-          description="Every NEF / Mirror number used as an anchor or in the comparison, with its source."
-        />
-        <div className="overflow-x-auto">
-          <table className="data-table w-full">
-            <thead>
-              <tr><th>Figure</th><th>Description</th><th>Source</th></tr>
-            </thead>
-            <tbody>
-              {Object.entries(reported).map(([key, s]) => (
-                <tr key={key}>
-                  <td className="whitespace-nowrap font-semibold">
-                    {typeof s.value === "number" && s.value >= 1000
-                      ? s.value.toLocaleString("en-GB")
-                      : s.value}
-                  </td>
-                  <td className="text-slate-600">{s.description}</td>
-                  <td>
-                    <a href={s.url} target="_blank" rel="noreferrer" className="underline">
-                      link
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="section-card">
-        <SectionHeading title="Package versions" />
-        <ul className="list-disc space-y-1 pl-5 text-sm text-slate-700">
-          {Object.entries(data.package_versions).map(([k, v]) => (
-            <li key={k}>
-              <code>{k}</code>: {v ?? "not installed"}
-            </li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 }

@@ -106,6 +106,51 @@ TAKEUP_SCENARIOS = [
 TAKEUP_DEFAULT_KEY = "benchmark"  # the take-up-adjusted central estimate we headline
 
 
+# ── Official statistics per baseline program (caseload / spend) ──────────────
+# Official published figures for each of the six childcare funding streams, shown
+# on the baseline tab alongside the PolicyEngine model estimate. Keyed by the
+# program id used in PROGRAM_LABELS. These are OFFICIAL counts/spend, distinct
+# from our survey-weighted model estimate, and each carries its own source URL.
+OFFICIAL_PROGRAM_STATS = {
+    "universal_childcare_entitlement": {
+        "stat": "1.16m children registered (93.1% of 3–4-year-olds)",
+        "period": "Jan 2025",
+        "source": "DfE, Funded early education and childcare",
+        "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025",
+    },
+    "extended_childcare_entitlement": {
+        "stat": "379k children on the extended 30h hours (~91% of eligible)",
+        "period": "Jan 2025",
+        "source": "DfE, Funded early education and childcare",
+        "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025",
+    },
+    "targeted_childcare_entitlement": {
+        "stat": "95k two-year-olds registered (65.2% of eligible)",
+        "period": "Jan 2025",
+        "source": "DfE, Funded early education and childcare",
+        "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025",
+    },
+    "tax_free_childcare": {
+        "stat": "~826k families used TFC; £632m government top-up",
+        "period": "2024-25",
+        "source": "HMRC, Tax-Free Childcare statistics",
+        "url": "https://www.gov.uk/government/statistics/tax-free-childcare-statistics-march-2025",
+    },
+    "uc_childcare_element": {
+        "stat": "190k households, average award £420/month",
+        "period": "May 2025",
+        "source": "DWP, Universal Credit childcare element statistics",
+        "url": "https://www.gov.uk/government/statistics/universal-credit-statistics-29-april-2013-to-10-july-2025/universal-credit-childcare-element-statistics-march-2021-to-may-2025",
+    },
+    "childcare_grant": {
+        "stat": "41,100 students awarded; £152.6m paid",
+        "period": "2023/24",
+        "source": "DfE / SLC, Student support for higher education",
+        "url": "https://www.gov.uk/government/statistics/student-support-for-higher-education-in-england-2024/student-support-for-higher-education-in-england-2024",
+    },
+}
+
+
 # ── NEF / Mirror reported figures (anchors for the comparison) ───────────────
 
 REPORTED = {

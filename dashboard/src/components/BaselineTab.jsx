@@ -104,39 +104,57 @@ export default function BaselineTab({ data }) {
       <section className="section-card">
         <SectionHeading
           title="The programs"
-          description="Each row is a distinct funding stream. The reform replaces the age-3 floor on the universal entitlement with a 9-month floor, and adds an earnings cost cap on hours above the universal 15."
+          description="Each row is a distinct funding stream, with our PolicyEngine model estimate next to the latest official published statistic. The reform replaces the age-3 floor on the universal entitlement with a 9-month floor, and adds an earnings cost cap on hours above the universal 15."
         />
         <div className="overflow-x-auto">
           <table className="data-table w-full">
             <thead>
-              <tr><th>Program</th><th className="text-right">Baseline spend</th></tr>
+              <tr>
+                <th>Program</th>
+                <th className="text-right">Model spend</th>
+                <th>Official statistic (latest)</th>
+              </tr>
             </thead>
             <tbody>
               {programs.map((p) => (
                 <tr key={p.id}>
-                  <td>{p.label}</td>
-                  <td className="text-right">{formatBn(p.baseline_bn)}</td>
+                  <td className="align-top font-medium">{p.label}</td>
+                  <td className="align-top text-right">{formatBn(p.baseline_bn)}</td>
+                  <td className="align-top text-sm text-slate-600">
+                    {p.official ? (
+                      <>
+                        {p.official.stat}
+                        <div className="mt-0.5 text-xs text-slate-400">
+                          {p.official.source}, {p.official.period} ·{" "}
+                          <a
+                            href={p.official.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="underline"
+                          >
+                            source
+                          </a>
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-slate-400">—</span>
+                    )}
+                  </td>
                 </tr>
               ))}
               <tr className="font-semibold">
                 <td>Total</td>
                 <td className="text-right">{formatBn(baseline.total_support_bn)}</td>
+                <td />
               </tr>
             </tbody>
           </table>
         </div>
-      </section>
-
-      <section className="section-card">
-        <SectionHeading
-          title="Baseline poverty and inequality"
-          description="Reference values the reform tab compares against."
-        />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <MetricCard label="Poverty rate, all (BHC)" value={formatPct(baseline.poverty_all_pct)} />
-          <MetricCard label="Child poverty rate (BHC)" value={formatPct(baseline.child_poverty_pct)} />
-          <MetricCard label="Gini (net income)" value={baseline.gini.toFixed(4)} />
-        </div>
+        <p className="mt-3 text-xs leading-5 text-slate-500">
+          Official caseloads are counts of children/families on each stream and are not directly
+          comparable to the model&apos;s survey-weighted annual spend; sources differ by programme
+          (DfE, HMRC, DWP, SLC).
+        </p>
       </section>
     </div>
   );

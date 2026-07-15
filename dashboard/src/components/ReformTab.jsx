@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -50,13 +51,13 @@ export default function ReformTab({ data }) {
   const cap = getCostCap(data);
   const reform = getReform(data);
   const dist = getDistribution(data);
-  const programs = getPrograms(data);
   const settings = getSettings(data);
   const reported = getReported(data);
   const takeup = getTakeup(data);
   const methods = getMethods(data);
 
-  const changed = programs.filter((p) => Math.abs(p.change_bn) > 1e-6);
+  const [changesOpen, setChangesOpen] = useState(false);
+  const [distMetric, setDistMetric] = useState("avg");
 
   const tuByKey = Object.fromEntries(takeup.scenarios.map((s) => [s.key, s]));
   const tuFull = tuByKey.full;
@@ -64,6 +65,7 @@ export default function ReformTab({ data }) {
   const tuLow = tuByKey.low;
   // Combined cost when the universal extension is priced at benchmark take-up.
   const combinedBenchmark = reform.total.gross_cost_benchmark_takeup_bn;
+  const takeupUrl = reported.takeup_2yo_offer.url;
 
   const takeupData = takeup.scenarios.map((s) => ({
     label: s.label,
@@ -83,6 +85,22 @@ export default function ReformTab({ data }) {
     age: `${a.age}`,
     count: a.count_k,
   }));
+
+  const DIST_METRICS = {
+    avg: {
+      label: "Average annual gain per household (£)",
+      color: PRIMARY,
+      tick: (v) => `£${Math.round(v)}`,
+      tooltip: (v) => formatCurrency(v),
+    },
+    pct: {
+      label: "Gain as % of household net income",
+      color: ACCENT,
+      tick: (v) => `${v}%`,
+      tooltip: (v) => formatPct(v, 2),
+    },
+  };
+  const dm = DIST_METRICS[distMetric];
 
   const comparison = [
     {
@@ -122,76 +140,7 @@ export default function ReformTab({ data }) {
         />
       </div>
 
-      {/* what this analysis adds over NEF's single headline */}
-      <section className="section-card" style={{ borderLeft: `4px solid ${ACCENT}` }}>
-        <SectionHeading title="What this analysis adds" />
-        <p className="text-sm leading-6 text-slate-600">{methods.value_add}</p>
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-md bg-slate-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Decompose</p>
-            <p className="mt-1 text-sm leading-5 text-slate-700">
-              The universal under-3 extension is <span className="font-semibold">{formatBn(ext.net_cost_bn)}</span> of the
-              cost; the earnings cap adds only <span className="font-semibold">{formatBn(cap.cost_bn)}</span>. The extension
-              is the bulk — not the cap.
-            </p>
-          </div>
-          <div className="rounded-md bg-slate-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Who is covered</p>
-            <p className="mt-1 text-sm leading-5 text-slate-700">
-              The <span className="font-semibold">{ext.newly_covered_m.toFixed(2)}m</span> newly-covered children are almost
-              all under-3s in <span className="font-semibold">non-working</span> families — working families' under-3s
-              already use the 30h offer.
-            </p>
-          </div>
-          <div className="rounded-md bg-slate-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Stress-test take-up</p>
-            <p className="mt-1 text-sm leading-5 text-slate-700">
-              At realistic take-up the extension costs{" "}
-              <span className="font-semibold">{formatBn(tuLow.cost_bn)}–{formatBn(tuBench.cost_bn)}</span>, not the{" "}
-              {formatBn(tuFull.cost_bn)} full-take-up ceiling.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* what the reform changes */}
-      <section className="section-card">
-        <SectionHeading
-          title="What the reform changes"
-          description="Each policy lever the Universal Family Childcare Promise moves, and its value before and after. Statutory levers are PolicyEngine parameters; the earnings cost cap is a new mechanism the reform introduces."
-        />
-        <div className="overflow-x-auto">
-          <table className="data-table w-full">
-            <thead>
-              <tr>
-                <th>Policy lever</th>
-                <th>Baseline (current law)</th>
-                <th>Reform (UFCP)</th>
-                <th>Effect</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reform.changes.map((c) => (
-                <tr key={c.policy}>
-                  <td className="align-top font-semibold">
-                    {c.policy}
-                    <div className="mt-1 font-mono text-[11px] font-normal text-slate-400">
-                      {c.parameter}
-                    </div>
-                  </td>
-                  <td className="align-top text-slate-600">{c.baseline}</td>
-                  <td className="align-top font-medium" style={{ color: colors.primary[700] }}>
-                    {c.reform}
-                  </td>
-                  <td className="align-top text-sm text-slate-500">{c.effect}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* headline metrics */}
+      {/* headline metrics — first thing on the tab */}
       <section className="section-card">
         <SectionHeading
           title="Headline cost"
@@ -294,10 +243,65 @@ export default function ReformTab({ data }) {
           the extension reaches children with a parent already at home, take-up is the single biggest
           swing on the cost. The {formatBn(tuFull.cost_bn)} "£4bn for non-working families" figure is the{" "}
           <em>ceiling</em> — it assumes every eligible family enrols. Benchmarked against the disadvantaged
-          2-year-old offer (~{formatPct(reported.takeup_2yo_offer.value * 100, 0)} take-up, the closest real
-          comparator), the extension costs {formatBn(tuBench.cost_bn)}; on a low case for the youngest
-          children, {formatBn(tuLow.cost_bn)}.
+          2-year-old offer (
+          <a href={takeupUrl} target="_blank" rel="noreferrer" className="font-medium underline" style={{ color: ACCENT }}>
+            ~{formatPct(reported.takeup_2yo_offer.value * 100, 0)} take-up
+          </a>
+          , the closest real comparator), the extension costs {formatBn(tuBench.cost_bn)}; on a low case
+          for the youngest children, {formatBn(tuLow.cost_bn)}.
         </p>
+      </section>
+
+      {/* what the reform changes — expandable detail */}
+      <section className="section-card">
+        <button
+          type="button"
+          onClick={() => setChangesOpen((v) => !v)}
+          className="flex w-full items-center justify-between text-left"
+          aria-expanded={changesOpen}
+        >
+          <SectionHeading
+            title="What the reform changes"
+            description="Each policy lever the Universal Family Childcare Promise moves, and its value before and after. Statutory levers are PolicyEngine parameters; the earnings cost cap is a new mechanism the reform introduces."
+          />
+          <span
+            className="ml-4 shrink-0 rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
+            aria-hidden="true"
+          >
+            {changesOpen ? "Hide ▲" : "Show ▼"}
+          </span>
+        </button>
+        {changesOpen && (
+          <div className="mt-4 overflow-x-auto">
+            <table className="data-table w-full">
+              <thead>
+                <tr>
+                  <th>Policy lever</th>
+                  <th>Baseline (current law)</th>
+                  <th>Reform (UFCP)</th>
+                  <th>Effect</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reform.changes.map((c) => (
+                  <tr key={c.policy}>
+                    <td className="align-top font-semibold">
+                      {c.policy}
+                      <div className="mt-1 font-mono text-[11px] font-normal text-slate-400">
+                        {c.parameter}
+                      </div>
+                    </td>
+                    <td className="align-top text-slate-600">{c.baseline}</td>
+                    <td className="align-top font-medium" style={{ color: colors.primary[700] }}>
+                      {c.reform}
+                    </td>
+                    <td className="align-top text-sm text-slate-500">{c.effect}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
 
       {/* newly covered by age */}
@@ -320,40 +324,7 @@ export default function ReformTab({ data }) {
         <ChartLogo />
       </section>
 
-      {/* program table */}
-      <section className="section-card">
-        <SectionHeading
-          title="Every childcare program, baseline vs reform"
-          description="The reform is scored net across the whole childcare stack. In this static run only the universal entitlement moves; the cost cap (component 2) is priced separately above."
-        />
-        <div className="overflow-x-auto">
-          <table className="data-table w-full">
-            <thead>
-              <tr>
-                <th>Program</th>
-                <th className="text-right">Baseline</th>
-                <th className="text-right">Reform</th>
-                <th className="text-right">Change</th>
-              </tr>
-            </thead>
-            <tbody>
-              {programs.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.label}</td>
-                  <td className="text-right">{formatBn(p.baseline_bn)}</td>
-                  <td className="text-right">{formatBn(p.reform_bn)}</td>
-                  <td className="text-right font-semibold" style={{ color: p.change_bn > 1e-6 ? ACCENT : colors.gray[500] }}>
-                    {p.change_bn > 1e-6 ? "+" : ""}
-                    {formatBn(p.change_bn)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* distribution */}
+      {/* distribution — single chart with a metric toggle */}
       <section className="section-card">
         <SectionHeading
           title="Distributional impact by income decile"
@@ -361,54 +332,35 @@ export default function ReformTab({ data }) {
             dist.bottom60_mean_gain,
           )}/yr (NEF report £${reported.nef_bottom60_gain_low.value}–${reported.nef_bottom60_gain_high.value} for the bottom 60% of earners under the full system with the cost cap).`}
         />
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div>
-            <p className="mb-2 text-sm font-medium text-slate-600">Average annual gain per household (£)</p>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={decileData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={colors.gray[200]} vertical={false} />
-                <XAxis dataKey="decile" tick={AXIS} />
-                <YAxis tick={AXIS} />
-                <Tooltip formatter={(v) => formatCurrency(v)} labelFormatter={(l) => `Decile ${l}`} />
-                <Bar dataKey="avg" fill={PRIMARY} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium text-slate-600">Gain as % of household net income</p>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={decileData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={colors.gray[200]} vertical={false} />
-                <XAxis dataKey="decile" tick={AXIS} />
-                <YAxis tick={AXIS} />
-                <Tooltip formatter={(v) => formatPct(v, 2)} labelFormatter={(l) => `Decile ${l}`} />
-                <Bar dataKey="pct" fill={ACCENT} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        <div className="mb-3 inline-flex rounded-lg border border-slate-200 p-0.5">
+          {Object.entries(DIST_METRICS).map(([key, m]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setDistMetric(key)}
+              className="rounded-md px-3 py-1.5 text-sm font-medium transition"
+              style={
+                distMetric === key
+                  ? { backgroundColor: m.color, color: "white" }
+                  : { color: colors.gray[600] }
+              }
+            >
+              {key === "avg" ? "£ per household" : "% of income"}
+            </button>
+          ))}
         </div>
-        <p className="mt-3 text-xs text-slate-500">Household income decile, 1 = poorest. Overall share of households gaining: {formatPct(dist.overall_winner_share, 1)}.</p>
+        <p className="mb-2 text-sm font-medium text-slate-600">{dm.label}</p>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={decileData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.gray[200]} vertical={false} />
+            <XAxis dataKey="decile" tick={AXIS} label={{ value: "Household income decile (1 = poorest)", position: "insideBottom", offset: -2, fontSize: 12, fill: colors.gray[500] }} />
+            <YAxis tick={AXIS} tickFormatter={dm.tick} />
+            <Tooltip formatter={(v) => dm.tooltip(v)} labelFormatter={(l) => `Decile ${l}`} />
+            <Bar dataKey={distMetric} fill={dm.color} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+        <p className="mt-3 text-xs text-slate-500">Overall share of households gaining: {formatPct(dist.overall_winner_share, 1)}.</p>
         <ChartLogo />
-      </section>
-
-      {/* poverty + inequality */}
-      <section className="section-card">
-        <SectionHeading
-          title="Poverty and inequality"
-          description="The universal entitlement is valued in-kind at DfE funding rates and added to net income, so income-based poverty barely moves even though the in-kind benefit is sizeable."
-        />
-        <div className="overflow-x-auto">
-          <table className="data-table w-full">
-            <thead>
-              <tr><th>Measure</th><th className="text-right">Baseline</th><th className="text-right">Reform</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Poverty rate, all (BHC)</td><td className="text-right">{formatPct(reform.poverty.all_baseline)}</td><td className="text-right">{formatPct(reform.poverty.all_reform)}</td></tr>
-              <tr><td>Child poverty rate (BHC)</td><td className="text-right">{formatPct(reform.poverty.child_baseline)}</td><td className="text-right">{formatPct(reform.poverty.child_reform)}</td></tr>
-              <tr><td>Gini (net income)</td><td className="text-right">{reform.inequality.gini_baseline.toFixed(4)}</td><td className="text-right">{reform.inequality.gini_reform.toFixed(4)}</td></tr>
-            </tbody>
-          </table>
-        </div>
       </section>
 
       {/* comparison */}
