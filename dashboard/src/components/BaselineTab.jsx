@@ -35,7 +35,9 @@ function MetricCard({ label, value, note }) {
 
 export default function BaselineTab({ data }) {
   const baseline = getBaseline(data);
-  const programs = getPrograms(data);
+  // Childcare Grant is out of PolicyEngine's scope here (£0 model spend), so it
+  // is excluded from the baseline breakdown.
+  const programs = getPrograms(data).filter((p) => p.id !== "childcare_grant");
   const reported = getReported(data);
 
   const spendData = programs
@@ -58,7 +60,7 @@ export default function BaselineTab({ data }) {
           <MetricCard
             label="Total government childcare support"
             value={formatBn(baseline.total_support_bn)}
-            note={`Across six programs. NEF estimate for the fully rolled-out system: £${reported.nef_current_system_cost.value}bn.`}
+            note={`Across five funded programs. NEF estimate for the fully rolled-out system: £${reported.nef_current_system_cost.value}bn.`}
           />
           <MetricCard
             label="Children under 5"

@@ -367,7 +367,21 @@ export default function ReformTab({ data }) {
       <section className="section-card">
         <SectionHeading
           title="Our numbers vs the NEF / Mirror figures"
-          description="What maps to what: our static score isolates each component; NEF's headline £3-3.4bn is the net cost of the whole system, which also replaces Tax-Free Childcare and the UC childcare element. Same order of magnitude, not like-for-like."
+          description={
+            <>
+              What maps to what: our static score isolates each component;{" "}
+              <a
+                href={reported.nef_net_cost_low.url}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                NEF&apos;s headline £3-3.4bn
+              </a>{" "}
+              is the net cost of the whole system, which also replaces Tax-Free Childcare and the UC
+              childcare element. Same order of magnitude, not like-for-like.
+            </>
+          }
         />
         <div className="overflow-x-auto">
           <table className="data-table w-full">
