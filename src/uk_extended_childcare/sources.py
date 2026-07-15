@@ -111,44 +111,62 @@ TAKEUP_DEFAULT_KEY = "benchmark"  # the take-up-adjusted central estimate we hea
 # on the baseline tab alongside the PolicyEngine model estimate. Keyed by the
 # program id used in PROGRAM_LABELS. These are OFFICIAL counts/spend, distinct
 # from our survey-weighted model estimate, and each carries its own source URL.
+# Per stream we record the latest official caseload (`stat`), and, where an
+# official ANNUAL SPEND is published, an `official_spend` string to sit next to
+# our model estimate. The three funded entitlements have no per-stream spend
+# split (see OFFICIAL_ENTITLEMENT_SPEND_NOTE); TFC and UC do.
 OFFICIAL_PROGRAM_STATS = {
     "universal_childcare_entitlement": {
         "stat": "1.16m children registered (93.1% of 3–4-year-olds)",
         "period": "Jan 2025",
         "source": "DfE, Funded early education and childcare",
         "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025",
+        "official_spend": None,
     },
     "extended_childcare_entitlement": {
-        "stat": "379k children on the extended 30h hours (~91% of eligible)",
+        "stat": "379k 3–4-year-olds on the extended 30h hours (a subset of the 1.16m universal count)",
         "period": "Jan 2025",
         "source": "DfE, Funded early education and childcare",
         "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025",
+        "official_spend": None,
     },
     "targeted_childcare_entitlement": {
-        "stat": "95k two-year-olds registered (65.2% of eligible)",
+        "stat": "95k two-year-olds registered (65.2%); DfE flags possible 2025 misclassification",
         "period": "Jan 2025",
         "source": "DfE, Funded early education and childcare",
         "url": "https://explore-education-statistics.service.gov.uk/find-statistics/funded-early-education-and-childcare/2025",
+        "official_spend": None,
     },
     "tax_free_childcare": {
         "stat": "~826k families used TFC; £632m government top-up",
         "period": "2024-25",
         "source": "HMRC, Tax-Free Childcare statistics",
         "url": "https://www.gov.uk/government/statistics/tax-free-childcare-statistics-march-2025",
+        "official_spend": "£0.63bn top-up (UK, 2024-25)",
     },
     "uc_childcare_element": {
-        "stat": "190k households, average award £420/month",
-        "period": "May 2025",
+        "stat": "160k households, average award £420/month",
+        "period": "Aug 2025",
         "source": "DWP, Universal Credit childcare element statistics",
-        "url": "https://www.gov.uk/government/statistics/universal-credit-statistics-29-april-2013-to-10-july-2025/universal-credit-childcare-element-statistics-march-2021-to-may-2025",
+        "url": "https://www.gov.uk/government/statistics/universal-credit-statistics-29-april-2013-to-9-october-2025/universal-credit-childcare-element-statistics-to-august-2025",
+        "official_spend": "~£0.8bn implied (160k × £420/mo)",
     },
     "childcare_grant": {
         "stat": "41,100 students awarded; £152.6m paid",
         "period": "2023/24",
         "source": "DfE / SLC, Student support for higher education",
         "url": "https://www.gov.uk/government/statistics/student-support-for-higher-education-in-england-2024/student-support-for-higher-education-in-england-2024",
+        "official_spend": "£0.15bn paid (2023/24)",
     },
 }
+
+# The universal/extended/2-year-old entitlements are not published with a
+# per-stream spend split; DfE/IFS report total free-entitlement spending only.
+OFFICIAL_ENTITLEMENT_SPEND_NOTE = Source(
+    value=8.7,
+    description="Total public spending on the free early-education entitlements in England reached £8.7bn in 2025-26 (double the £4.4bn of 2023-24) — the closest official figure to our combined universal + extended + 2-year-old streams, though it also includes the new under-3 working-parent expansion our baseline excludes.",
+    url="https://ifs.org.uk/publications/annual-report-education-spending-england-2025-26",
+)
 
 
 # ── NEF / Mirror reported figures (anchors for the comparison) ───────────────
@@ -237,10 +255,11 @@ METHODS = {
         "Component 1 of the UFCP — a universal 15-hour entitlement for every child from 9 months "
         "to 4 years — is modelled by lowering gov.dfe.universal_childcare_entitlement.age.min from "
         "3 to 0. The entitlement is valued at DfE funding rates (higher for younger children), so "
-        "the cost is hours x funding_rate(age). Because universal and the extended (30h) offer "
-        "cannot be combined, the extension newly reaches children not already on a funded scheme — "
-        "largely under-3s in non-working families. Ages are integer years, so the model covers 0-4y, "
-        "marginally over-inclusive of NEF's 9-month floor."
+        "the cost is hours x funding_rate(age). Because the newly-eligible under-3s in working "
+        "families already receive funded hours through the working-parent entitlement, the extension "
+        "mainly reaches children not on any funded scheme — largely under-3s in non-working families. "
+        "Ages are integer years, so the model covers 0-4y, marginally over-inclusive of NEF's "
+        "9-month floor."
     ),
     "cost_cap": (
         "Component 2 — a cap on the cost of childcare above the universal 15 hours at a percentage "

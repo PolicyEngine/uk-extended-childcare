@@ -120,6 +120,7 @@ def build(cache_dir: Path, year: int = 2025, force: bool = False) -> dict:
             "poverty_all_pct": impacts.poverty_impact(baseline, reform)["all_baseline"],
             "child_poverty_pct": impacts.poverty_impact(baseline, reform)["child_baseline"],
             "gini": impacts.inequality_impact(baseline, reform)["gini_baseline"],
+            "entitlement_spend_note": asdict(sources.OFFICIAL_ENTITLEMENT_SPEND_NOTE),
         },
         "reform": {
             "changes": sources.REFORM_CHANGES,

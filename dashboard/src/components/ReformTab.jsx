@@ -13,7 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import { colors } from "../lib/colors";
-import { formatBn, formatCount, formatCurrency, formatPct } from "../lib/formatters";
+import { formatBn, formatCurrency, formatPct } from "../lib/formatters";
 import {
   getCostCap,
   getDistribution,
@@ -126,7 +126,7 @@ export default function ReformTab({ data }) {
     },
     {
       metric: "Children newly on the universal offer",
-      reported: `~${formatCount(reported.dfe_families_funded_hours.value)} families excluded today`,
+      reported: "—",
       ours: `${ext.newly_covered_m.toFixed(2)}m children`,
     },
   ];
@@ -309,7 +309,7 @@ export default function ReformTab({ data }) {
       <section className="section-card">
         <SectionHeading
           title="Who is newly covered, by age"
-          description="Most under-3s in working families already get the extended (30h) offer, which cannot be combined with the universal offer, so the extension reaches children not on any funded scheme."
+          description="Most under-3s in working families already receive funded hours through the working-parent entitlement, so the universal extension mainly reaches children not on any funded scheme — under-3s in non-working families."
         />
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={byAge} margin={{ top: 20, right: 20, left: 10, bottom: 5 }}>
