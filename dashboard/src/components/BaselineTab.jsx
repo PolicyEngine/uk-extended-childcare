@@ -105,8 +105,8 @@ export default function BaselineTab({ data }) {
 
       <section className="section-card">
         <SectionHeading
-          title="The programs — model vs official figures"
-          description="Each row is a distinct funding stream, with our PolicyEngine model spend next to the official published spend and caseload where one exists. The reform replaces the age-3 floor on the universal entitlement with a 9-month floor, and adds an earnings cost cap on hours above the universal 15."
+          title="Model spend and official caseloads by program"
+          description="Each row is a distinct funding stream, with our PolicyEngine model spend next to the latest official caseload where one is published. The reform replaces the age-3 floor on the universal entitlement with a 9-month floor, and adds an earnings cost cap on hours above the universal 15."
         />
         <div className="overflow-x-auto">
           <table className="data-table w-full">
@@ -114,7 +114,6 @@ export default function BaselineTab({ data }) {
               <tr>
                 <th>Program</th>
                 <th className="text-right">Model spend</th>
-                <th className="text-right">Official spend</th>
                 <th>Official caseload (latest)</th>
               </tr>
             </thead>
@@ -123,13 +122,6 @@ export default function BaselineTab({ data }) {
                 <tr key={p.id}>
                   <td className="align-top font-medium">{p.label}</td>
                   <td className="align-top text-right">{formatBn(p.baseline_bn)}</td>
-                  <td className="align-top text-right text-slate-600">
-                    {p.official?.official_spend ? (
-                      p.official.official_spend
-                    ) : (
-                      <span className="text-slate-400">no split*</span>
-                    )}
-                  </td>
                   <td className="align-top text-sm text-slate-600">
                     {p.official ? (
                       <>
@@ -156,31 +148,14 @@ export default function BaselineTab({ data }) {
                 <td>Total</td>
                 <td className="text-right">{formatBn(baseline.total_support_bn)}</td>
                 <td />
-                <td />
               </tr>
             </tbody>
           </table>
         </div>
         <p className="mt-3 text-xs leading-5 text-slate-500">
-          *The three funded entitlements are not published with a per-stream spend split.{" "}
-          <a
-            href={baseline.entitlement_spend_note.url}
-            target="_blank"
-            rel="noreferrer"
-            className="underline"
-          >
-            IFS
-          </a>{" "}
-          puts total free-entitlement spending at £{baseline.entitlement_spend_note.value}bn in
-          2025-26 (which also includes the new under-3 offer our baseline excludes) vs our combined
-          universal + extended + 2-year-old estimate of{" "}
-          {formatBn(
-            programs
-              .filter((p) => !p.official?.official_spend && p.id !== "childcare_grant")
-              .reduce((s, p) => s + p.baseline_bn, 0),
-          )}
-          . Tax-Free Childcare matches official spend closely; the Universal Credit childcare element
-          line is well above the ~£0.8bn implied by DWP caseload and is flagged for review.
+          Official caseloads are counts of children/families on each stream and are not directly
+          comparable to the model&apos;s survey-weighted annual spend; sources differ by programme
+          (DfE, HMRC, DWP).
         </p>
       </section>
     </div>
