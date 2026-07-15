@@ -57,7 +57,8 @@ export default function ReformTab({ data }) {
   const methods = getMethods(data);
 
   const [changesOpen, setChangesOpen] = useState(false);
-  const [distMetric, setDistMetric] = useState("avg");
+  const [compareOpen, setCompareOpen] = useState(false);
+  const [distMetric, setDistMetric] = useState("pct");
 
   const tuByKey = Object.fromEntries(takeup.scenarios.map((s) => [s.key, s]));
   const tuFull = tuByKey.full;
@@ -363,42 +364,57 @@ export default function ReformTab({ data }) {
         <ChartLogo />
       </section>
 
-      {/* comparison */}
+      {/* comparison — expandable */}
       <section className="section-card">
-        <SectionHeading
-          title="Our numbers vs the NEF / Mirror figures"
-          description={
-            <>
-              What maps to what: our static score isolates each component;{" "}
-              <a
-                href={reported.nef_net_cost_low.url}
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                NEF&apos;s headline £3-3.4bn
-              </a>{" "}
-              is the net cost of the whole system, which also replaces Tax-Free Childcare and the UC
-              childcare element. Same order of magnitude, not like-for-like.
-            </>
-          }
-        />
-        <div className="overflow-x-auto">
-          <table className="data-table w-full">
-            <thead>
-              <tr><th>Metric</th><th>NEF / Mirror reported</th><th>PolicyEngine (this run)</th></tr>
-            </thead>
-            <tbody>
-              {comparison.map((c) => (
-                <tr key={c.metric}>
-                  <td className="max-w-xs">{c.metric}</td>
-                  <td className="text-slate-500">{c.reported}</td>
-                  <td className="font-semibold">{c.ours}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <button
+          type="button"
+          onClick={() => setCompareOpen((v) => !v)}
+          className="flex w-full items-center justify-between text-left"
+          aria-expanded={compareOpen}
+        >
+          <SectionHeading
+            title="Our numbers vs the NEF / Mirror figures"
+            description={
+              <>
+                What maps to what: our static score isolates each component;{" "}
+                <a
+                  href={reported.nef_net_cost_low.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline"
+                >
+                  NEF&apos;s headline £3-3.4bn
+                </a>{" "}
+                is the net cost of the whole system, which also replaces Tax-Free Childcare and the UC
+                childcare element. Same order of magnitude, not like-for-like.
+              </>
+            }
+          />
+          <span
+            className="ml-4 shrink-0 rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
+            aria-hidden="true"
+          >
+            {compareOpen ? "Hide ▲" : "Show ▼"}
+          </span>
+        </button>
+        {compareOpen && (
+          <div className="mt-4 overflow-x-auto">
+            <table className="data-table w-full">
+              <thead>
+                <tr><th>Metric</th><th>NEF / Mirror reported</th><th>PolicyEngine (this run)</th></tr>
+              </thead>
+              <tbody>
+                {comparison.map((c) => (
+                  <tr key={c.metric}>
+                    <td className="max-w-xs">{c.metric}</td>
+                    <td className="text-slate-500">{c.reported}</td>
+                    <td className="font-semibold">{c.ours}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </div>
   );
